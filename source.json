@@ -1,0 +1,11 @@
+{
+  "owner": "devops-infra",
+  "repo": "action-pull-request",
+  "version": "v1.2.1",
+  "commit_sha": "c5a99ac1b5457fc14b5586d68b15f2f23fda8f6f",
+  "url": "https://github.com/devops-infra/action-pull-request",
+  "policy_sha": "ff50f15e4b79bfbf764dafdfd2579175a6ea9771",
+  "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
+  "test_agent_version": "1",
+  "harden_agent_version": "1"
+}
