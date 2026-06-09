@@ -14,7 +14,7 @@ Action **devops-infra--action-pull-request/v1.2.0** was hardened automatically. 
 
 ### unpinned-uses (severity: high)
 
-The action.yml uses a Docker image reference with a mutable version tag instead of an immutable SHA digest. The image `docker://devopsinfra/action-pull-request:v1.2.0` is pinned to the tag `v1.2.0`, which can be overwritten at any time on the registry, exposing the action to supply-chain attacks. It should be replaced with a SHA256 digest reference, e.g. `docker://devopsinfra/action-pull-request@sha256:<64-hex-char-digest>`.
+The action.yml Docker image reference uses a mutable version tag (`v1.2.0`) instead of an immutable SHA digest. If the image at this tag is replaced or compromised, the action will silently execute the new image. It should be pinned to a specific SHA digest, e.g. `docker://devopsinfra/action-pull-request@sha256:<64-hex-char-digest>`.
 
 Locations:
 
@@ -28,5 +28,5 @@ Locations:
 
 **Notes:**
 
-Replaced the mutable Docker image tag `docker://devopsinfra/action-pull-request:v1.2.0` with the immutable SHA256 digest reference `docker://devopsinfra/action-pull-request@sha256:45bbe273ec096dd9b2f657d0cdb34ec3fb58999070a3aac5bed032f2b10e210d # v1.2.0` in action.yml at line 76. The tag is preserved as a comment for readability.
+Replaced the mutable Docker image tag `docker://devopsinfra/action-pull-request:v1.2.0` with the immutable SHA256 digest `docker://devopsinfra/action-pull-request@sha256:45bbe273ec096dd9b2f657d0cdb34ec3fb58999070a3aac5bed032f2b10e210d # v1.2.0` in action.yml at line 76. The original tag is preserved as a comment for readability.
 
