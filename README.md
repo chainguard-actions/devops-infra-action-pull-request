@@ -14,6 +14,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | v1.2.1 | [`v1.2.1`](https://github.com/chainguard-actions/devops-infra-action-pull-request/tree/v1.2.1) | [`c5a99ac`](https://github.com/devops-infra/action-pull-request/commit/c5a99ac1b5457fc14b5586d68b15f2f23fda8f6f) |
 | v1.2.2 | [`v1.2.2`](https://github.com/chainguard-actions/devops-infra-action-pull-request/tree/v1.2.2) | [`812a992`](https://github.com/devops-infra/action-pull-request/commit/812a9924cda2157fef88793de6b7c5808ad5e476) |
 | v1.2.3 | [`v1.2.3`](https://github.com/chainguard-actions/devops-infra-action-pull-request/tree/v1.2.3) | [`42d7426`](https://github.com/devops-infra/action-pull-request/commit/42d7426f0c2038288e8d873d5f2dd1f60c5eae1e) |
+| v1.2.4 | [`v1.2.4`](https://github.com/chainguard-actions/devops-infra-action-pull-request/tree/v1.2.4) | [`5b2d69c`](https://github.com/devops-infra/action-pull-request/commit/5b2d69cf1e5f2e44b37634fd8869127753e919d2) |
 | v1.2.5 | [`v1.2.5`](https://github.com/chainguard-actions/devops-infra-action-pull-request/tree/v1.2.5) | [`d688e76`](https://github.com/devops-infra/action-pull-request/commit/d688e764d6246a13e665fc9bb0335e2de3c82d31) |
 
 ## Privacy
