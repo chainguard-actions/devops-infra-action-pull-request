@@ -1,4 +1,4 @@
-name: Test basic usage - create pull request
+name: Test draft pull request creation
 on:
   workflow_dispatch:
 jobs:
@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_EVENT_NAME: push
-      GITHUB_REF: refs/heads/feature-branch
+      GITHUB_REF: refs/heads/feature-draft
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Set up git user
@@ -17,11 +17,12 @@ jobs:
         uses: .
         with:
           github_token: ${{ github.token }}
-          source_branch: feature-branch
+          source_branch: feature-draft
           target_branch: master
-          title: "Test PR from act"
-          body: "This is a test pull request body."
-          draft: "false"
+          title: "Draft PR from act"
+          body: "This is a draft pull request."
+          draft: "true"
+          label: "test,automation"
           allow_no_diff: "true"
         continue-on-error: true
       - name: Assert action ran without unexpected errors
@@ -31,7 +32,6 @@ jobs:
           echo "action outcome: $OUTCOME"
           # The action may fail because there's no real remote repo or diff,
           # but it should not fail due to missing github_token input.
-          # We accept 'success' or 'failure' (not 'skipped').
           if [ "$OUTCOME" = "skipped" ]; then
             echo "FAIL: action was skipped unexpectedly"
             exit 1
