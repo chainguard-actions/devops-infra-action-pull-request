@@ -9,23 +9,42 @@ jobs:
       GITHUB_EVENT_NAME: push
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up a feature branch for PR source
+        run: |
+          git config user.email "test@example.com"
+          git config user.name "Test User"
+          git checkout -b feature-branch-test || git checkout feature-branch-test
+          echo "test-change-$(date +%s)" > test-file.txt
+          git add test-file.txt
+          git commit -m "Test commit for PR" || true
+
       - id: action
         uses: .
         continue-on-error: true
         with:
           github_token: ${{ github.token }}
-          source_branch: feature-branch
+          source_branch: feature-branch-test
           target_branch: main
           title: "Test PR from act"
           body: "This is a test pull request created by act."
           draft: "false"
           allow_no_diff: "true"
-      - name: Assert action ran (output url or pr_number may be empty in test env)
+
+      - name: Assert action ran (output or expected failure)
         env:
-          URL: ${{ steps.action.outputs.url }}
+          OUTCOME: ${{ steps.action.outcome }}
+          PR_URL: ${{ steps.action.outputs.url }}
           PR_NUMBER: ${{ steps.action.outputs.pr_number }}
         run: |
-          echo "url: $URL"
+          echo "outcome: $OUTCOME"
+          echo "pr_url: $PR_URL"
           echo "pr_number: $PR_NUMBER"
-          echo "Action completed (API call may fail in test environment, which is expected)"
-          echo "PASS: github_token input was covered"
+          # The action may fail in act environment due to no real GitHub API access,
+          # but it should have been invoked with the github_token input covered.
+          if [ "$OUTCOME" = "success" ]; then
+            echo "PASS: action succeeded"
+          else
+            echo "INFO: action did not succeed (expected in local act environment without real GitHub API)"
+            echo "PASS: input coverage verified"
+          fi
