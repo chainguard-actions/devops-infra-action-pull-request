@@ -1,8 +1,10 @@
+<!-- markdownlint-disable -->
+
 # Hardening Report: devops-infra--action-pull-request/v1.2.3
 
 > This file was generated automatically by the hardening agent.
 
-**Policy SHA:** `ff50f15e4b79bfbf764dafdfd2579175a6ea9771`
+**Policy SHA:** `d636be7e43ef829af6e853da6b3c7566db9f72fe`
 
 **Test Policy SHA:** `843adf9e4b8f85d0c08b27b9d0b09dd094b54702`
 
@@ -14,7 +16,7 @@ Action **devops-infra--action-pull-request/v1.2.3** was hardened automatically. 
 
 ### unpinned-uses (severity: high)
 
-The action.yml uses a Docker image reference with a mutable version tag instead of an immutable SHA digest. The image `docker://devopsinfra/action-pull-request:v1.2.3` uses the tag `v1.2.3`, which can be silently replaced by a different (potentially malicious) image without changing the workflow. It should be pinned to a SHA256 digest, e.g. `docker://devopsinfra/action-pull-request@sha256:<64-hex-char-digest> # v1.2.3`.
+The action.yml uses a Docker image reference with a mutable version tag instead of an immutable SHA digest. `image: docker://devopsinfra/action-pull-request:v1.2.3` uses the tag `v1.2.3`, which can be silently overwritten on the registry, enabling supply-chain attacks. It should be pinned to a specific SHA digest, e.g. `image: docker://devopsinfra/action-pull-request@sha256:<64-hex-char-digest>`.
 
 Locations:
 
@@ -28,5 +30,5 @@ Locations:
 
 **Notes:**
 
-Replaced the mutable Docker image tag `docker://devopsinfra/action-pull-request:v1.2.3` with the immutable SHA256 digest `docker://devopsinfra/action-pull-request@sha256:c7a688e89a7ceee1736076df615029cd4656282b28779fda8e3b6b621f219cb0 # v1.2.3` in action.yml at line 76.
+Replaced the mutable Docker image tag `devopsinfra/action-pull-request:v1.2.3` with the immutable SHA256 digest `devopsinfra/action-pull-request@sha256:c7a688e89a7ceee1736076df615029cd4656282b28779fda8e3b6b621f219cb0 # v1.2.3` in action.yml at line 76. The original tag is preserved as a comment for readability.
 
