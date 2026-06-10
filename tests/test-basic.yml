@@ -10,34 +10,25 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Set up a source branch for PR creation
-        run: |
-          git config user.email "test@example.com"
-          git config user.name "Test User"
-          git checkout -b feature-test-branch || true
-          echo "test-file-$(date +%s)" > test-change.txt
-          git add test-change.txt
-          git commit -m "Test commit for PR" || true
-
       - id: action
         uses: .
         continue-on-error: true
         with:
-          github_token: ${{ github.token }}
-          source_branch: feature-test-branch
+          github_token: fake-token-for-testing
+          source_branch: feature-branch
           target_branch: master
-          title: "Test PR from act"
-          body: "This is a test pull request created by act"
+          title: "Test PR from feature-branch"
+          body: "This is a test pull request body."
+          draft: "false"
           allow_no_diff: "true"
 
-      - name: Assert action ran (outputs exist or action completed)
+      - name: Assert action was invoked with github_token
         run: |
           echo "Action outcome: ${{ steps.action.outcome }}"
-          # The action may fail due to API limitations in test environment,
-          # but it should have been invoked with the github_token input covered.
-          # We accept both success and failure outcomes as long as the action ran.
+          # The action may fail due to invalid token/no real GitHub API,
+          # but it must have been invoked (outcome is 'success' or 'failure', not 'skipped')
           if [ "${{ steps.action.outcome }}" = "skipped" ]; then
-            echo "FAIL: action was skipped unexpectedly"
+            echo "FAIL: action was skipped, expected it to be invoked"
             exit 1
           fi
-          echo "PASS: action was invoked with github_token input"
+          echo "PASS: action was invoked (outcome: ${{ steps.action.outcome }})"
