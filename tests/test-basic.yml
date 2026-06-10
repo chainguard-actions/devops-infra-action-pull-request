@@ -22,14 +22,17 @@ jobs:
           draft: "false"
           allow_no_diff: "true"
 
-      - name: Assert action was invoked with github_token
+      - name: Assert action was invoked with github_token input
         run: |
           echo "Action outcome: ${{ steps.action.outcome }}"
           echo "Action conclusion: ${{ steps.action.conclusion }}"
-          # The action may fail because there's no real PR to create in the test env,
-          # but it must have been invoked (outcome is set).
-          if [ -z "${{ steps.action.outcome }}" ]; then
-            echo "FAIL: action was not invoked"
+          # The action may fail because there is no real diverged branch or
+          # valid GitHub token in the act environment, but the input coverage
+          # requirement (github_token must appear in with:) is satisfied.
+          # We accept both success and failure outcomes here.
+          if [ "${{ steps.action.outcome }}" = "success" ] || [ "${{ steps.action.outcome }}" = "failure" ]; then
+            echo "PASS: action was invoked"
+          else
+            echo "FAIL: unexpected outcome '${{ steps.action.outcome }}'"
             exit 1
           fi
-          echo "PASS: action was invoked"

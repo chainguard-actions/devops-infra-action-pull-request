@@ -1,8 +1,10 @@
+<!-- markdownlint-disable -->
+
 # Hardening Report: devops-infra--action-pull-request/v1.1.3
 
 > This file was generated automatically by the hardening agent.
 
-**Policy SHA:** `ff50f15e4b79bfbf764dafdfd2579175a6ea9771`
+**Policy SHA:** `d636be7e43ef829af6e853da6b3c7566db9f72fe`
 
 **Test Policy SHA:** `843adf9e4b8f85d0c08b27b9d0b09dd094b54702`
 
@@ -14,11 +16,11 @@ Action **devops-infra--action-pull-request/v1.1.3** was hardened automatically. 
 
 ### unpinned-uses (severity: high)
 
-The action.yml uses a Docker image referenced by a mutable version tag (`v1.1.3`) instead of an immutable SHA digest. This means the image could be replaced with a different (potentially malicious) version without changing the action reference. The failing reference is: `image: docker://devopsinfra/action-pull-request:v1.1.3`. It should be replaced with a SHA digest, e.g. `image: docker://devopsinfra/action-pull-request@sha256:<64-hex-char-digest>`.
+The action.yml references a Docker image by mutable tag rather than an immutable SHA digest. The image `docker://devopsinfra/action-pull-request:v1.1.3` uses the tag `v1.1.3`, which can be silently replaced with different (potentially malicious) content at any time. It should be pinned to a specific SHA256 digest, e.g. `image: devopsinfra/action-pull-request@sha256:<64-hex-char-digest> # v1.1.3`.
 
 Locations:
 
-- `action.yml:68`
+- `action.yml:72`
 
 ## Iteration Notes
 
@@ -28,5 +30,5 @@ Locations:
 
 **Notes:**
 
-Replaced the mutable Docker image tag reference `docker://devopsinfra/action-pull-request:v1.1.3` with the immutable SHA256 digest `docker://devopsinfra/action-pull-request@sha256:6c6b319b2aa16d1cd488d71b6147769bd3f17fd307baf39e2a4fc252497c7e92 # v1.1.3` in action.yml at line 68. The original tag is preserved as a comment for readability.
+Pinned the Docker image reference in action.yml from the mutable tag `docker://devopsinfra/action-pull-request:v1.1.3` to the immutable digest `docker://devopsinfra/action-pull-request@sha256:6c6b319b2aa16d1cd488d71b6147769bd3f17fd307baf39e2a4fc252497c7e92 # v1.1.3`. The tag is preserved as a comment for readability.
 
