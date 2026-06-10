@@ -1,8 +1,10 @@
+<!-- markdownlint-disable -->
+
 # Hardening Report: devops-infra--action-pull-request/v1.1.2
 
 > This file was generated automatically by the hardening agent.
 
-**Policy SHA:** `ff50f15e4b79bfbf764dafdfd2579175a6ea9771`
+**Policy SHA:** `d636be7e43ef829af6e853da6b3c7566db9f72fe`
 
 **Test Policy SHA:** `843adf9e4b8f85d0c08b27b9d0b09dd094b54702`
 
@@ -14,11 +16,11 @@ Action **devops-infra--action-pull-request/v1.1.2** was hardened automatically. 
 
 ### unpinned-uses (severity: high)
 
-The action.yml uses a Docker image reference with a mutable version tag instead of an immutable SHA digest. The reference `image: docker://devopsinfra/action-pull-request:v1.1.2` uses the tag `v1.1.2`, which can be changed at any time by the image owner, enabling supply-chain attacks. It should be replaced with a SHA256 digest reference, e.g. `image: docker://devopsinfra/action-pull-request@sha256:<64-hex-char-digest>`
+The action.yml runs.image field references a Docker image using a mutable tag (v1.1.2) instead of an immutable SHA digest. This means the image could be replaced with a different (potentially malicious) version without changing the action reference, creating a supply-chain attack vector. The failing reference is: `image: docker://devopsinfra/action-pull-request:v1.1.2`. It should be pinned to a SHA digest, e.g. `image: docker://devopsinfra/action-pull-request@sha256:<64-hex-char-digest>`.
 
 Locations:
 
-- `action.yml:63`
+- `action.yml:68`
 
 ## Iteration Notes
 
@@ -28,5 +30,5 @@ Locations:
 
 **Notes:**
 
-Replaced the mutable Docker image tag reference `docker://devopsinfra/action-pull-request:v1.1.2` with the immutable SHA256 digest reference `docker://devopsinfra/action-pull-request@sha256:0a2478172679bff88daf706e96152f64042d7a337212792ccde2ab49b115df0e # v1.1.2` in action.yml line 63. The digest was resolved using the Docker Registry HTTP API v2.
+Replaced the mutable Docker image tag `docker://devopsinfra/action-pull-request:v1.1.2` with the immutable SHA256 digest `docker://devopsinfra/action-pull-request@sha256:0a2478172679bff88daf706e96152f64042d7a337212792ccde2ab49b115df0e # v1.1.2` in action.yml line 68.
 

@@ -5,6 +5,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
+      GITHUB_TOKEN: fake-token-for-testing
       GITHUB_REF: refs/heads/feature-branch
       GITHUB_EVENT_NAME: push
     steps:
@@ -16,19 +17,19 @@ jobs:
         with:
           github_token: fake-token-for-testing
           source_branch: feature-branch
-          target_branch: main
-          title: "Test PR title"
-          body: "Test PR body"
+          target_branch: master
+          title: "Test PR from feature-branch"
+          body: "This is a test pull request body."
           draft: "false"
-          allow_no_diff: "true"
 
-      - name: Assert action was invoked
+      - name: Assert action ran (outputs may be empty due to fake token)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
         run: |
-          echo "Action outcome: ${{ steps.action.outcome }}"
-          # The action will fail because the token is fake and no real GitHub repo is available.
-          # We verify it was invoked (outcome is either success or failure, not skipped).
-          if [ "${{ steps.action.outcome }}" = "skipped" ]; then
-            echo "FAIL: action was skipped, expected it to run"
+          echo "action outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action executed (outcome=$OUTCOME)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
             exit 1
           fi
-          echo "PASS: action was invoked (outcome=${{ steps.action.outcome }})"
