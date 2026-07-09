@@ -1,0 +1,25 @@
+name: Weekly build
+
+on:
+  schedule:
+    # Run every week at 5.00 AM UTC
+    - cron: "0 5 */7 * *"
+
+permissions: {}
+
+jobs:
+  build_and_push:
+    name: Build and push images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+
+      - name: Build Docker image and push to registry
+        env:
+          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TERM: xterm-256color
+        run: make build

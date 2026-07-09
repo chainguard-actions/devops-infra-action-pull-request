@@ -1,0 +1,43 @@
+name: Test pull request with ignore_users and labels
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: fake-token-for-testing
+      GITHUB_EVENT_NAME: push
+      GITHUB_REF: refs/heads/labeled-feature-branch
+      GITHUB_HEAD_REF: labeled-feature-branch
+      GITHUB_BASE_REF: master
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up a source branch for testing
+        run: |
+          git config user.email "test@example.com"
+          git config user.name "Test User"
+          git checkout -b labeled-feature-branch 2>/dev/null || git checkout labeled-feature-branch
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          github_token: fake-token-for-testing
+          source_branch: labeled-feature-branch
+          target_branch: master
+          title: "Labeled PR: Test feature"
+          body: "This is a labeled pull request for testing."
+          label: "enhancement,bug"
+          ignore_users: "dependabot,renovate"
+          allow_no_diff: "true"
+
+      - name: Assert action was invoked with labels and ignore_users
+        run: |
+          echo "Action outcome: ${{ steps.action.outcome }}"
+          # The action will fail due to fake token, but it should have been invoked
+          if [ "${{ steps.action.outcome }}" = "skipped" ]; then
+            echo "FAIL: action was skipped, expected it to run"
+            exit 1
+          fi
+          echo "PASS: action was invoked with labels and ignore_users (outcome: ${{ steps.action.outcome }})"

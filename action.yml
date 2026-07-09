@@ -1,0 +1,77 @@
+name: GitHub Action for creating Pull Requests
+author: Krzysztof Szyper / ChristophShyper / biotyk@mail.com
+description: GitHub Action that will create a pull request from the current branch
+inputs:
+  github_token:
+    description: GitHub token
+    required: true
+  source_branch:
+    description: Name of the source branch
+    required: false
+    default: ""
+  target_branch:
+    description: Name of the target branch
+    required: false
+    default: master
+  title:
+    description: Pull request title
+    required: false
+    default: ""
+  template:
+    description: Template file location
+    required: false
+    default: ""
+  body:
+    description: Pull request body
+    required: false
+    default: ""
+  reviewer:
+    description: Reviewer's username
+    required: false
+    default: ""
+  assignee:
+    description: Assignee's usernames
+    required: false
+    default: ""
+  label:
+    description: Labels to apply, coma separated
+    required: false
+    default: ""
+  milestone:
+    description: Milestone
+    required: false
+    default: ""
+  draft:
+    description: Whether to mark it as a draft
+    required: false
+    default: "false"
+  old_string:
+    description: Old string for the replacement in template
+    required: false
+    default: ""
+  new_string:
+    description: New string for the replacement in the template
+    required: false
+  get_diff:
+    description: Whether to inject difference into template
+    required: false
+    default: "false"
+  ignore_users:
+    description: List of users to ignore, coma separated
+    required: false
+    default: "dependabot"
+  allow_no_diff:
+    description: Allows to continue on merge commits with no diffs
+    required: false
+    default: "false"
+outputs:
+  url:
+    description: Pull request URL.
+runs:
+  using: docker
+  image: docker://devopsinfra/action-pull-request@sha256:71ea62d079632a2aa40178969494ce9ce22f1a547762cd7c599c981efbddba02 # v0.5.0
+  env:
+    GITHUB_TOKEN: ${{ inputs.github_token }}
+branding:
+  color: purple
+  icon: upload-cloud
