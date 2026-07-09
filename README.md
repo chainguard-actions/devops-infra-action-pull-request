@@ -19,6 +19,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | v1.2.4 | [`v1.2.4`](https://github.com/chainguard-actions/devops-infra-action-pull-request/tree/v1.2.4) | [`5b2d69c`](https://github.com/devops-infra/action-pull-request/commit/5b2d69cf1e5f2e44b37634fd8869127753e919d2) |
 | v1.2.5 | [`v1.2.5`](https://github.com/chainguard-actions/devops-infra-action-pull-request/tree/v1.2.5) | [`d688e76`](https://github.com/devops-infra/action-pull-request/commit/d688e764d6246a13e665fc9bb0335e2de3c82d31) |
 | v1.3.0 | [`v1.3.0`](https://github.com/chainguard-actions/devops-infra-action-pull-request/tree/v1.3.0) | [`aa7651a`](https://github.com/devops-infra/action-pull-request/commit/aa7651a994452de96d97c764dd4976cf88be8778) |
+| v1.4.0 | [`v1.4.0`](https://github.com/chainguard-actions/devops-infra-action-pull-request/tree/v1.4.0) | [`1d8aa3c`](https://github.com/devops-infra/action-pull-request/commit/1d8aa3c4a6060a1410641f700f91353af65cc94b) |
 
 ## Privacy
 
