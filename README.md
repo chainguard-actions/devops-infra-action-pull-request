@@ -8,6 +8,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
+| v0.5.0 | [`v0.5.0`](https://github.com/chainguard-actions/devops-infra-action-pull-request/tree/v0.5.0) | [`31f014c`](https://github.com/devops-infra/action-pull-request/commit/31f014cbfa0eb4e9bd2474a940cb6280ab118be8) |
 | v1.1.1 | [`v1.1.1`](https://github.com/chainguard-actions/devops-infra-action-pull-request/tree/v1.1.1) | [`378b46d`](https://github.com/devops-infra/action-pull-request/commit/378b46ddbd9ba85b0f1e542003b6900b0a4c50c9) |
 | v1.1.2 | [`v1.1.2`](https://github.com/chainguard-actions/devops-infra-action-pull-request/tree/v1.1.2) | [`eb4c48b`](https://github.com/devops-infra/action-pull-request/commit/eb4c48b4c8695f506f6f37a8492b83d8192341dc) |
 | v1.1.3 | [`v1.1.3`](https://github.com/chainguard-actions/devops-infra-action-pull-request/tree/v1.1.3) | [`86d8692`](https://github.com/devops-infra/action-pull-request/commit/86d8692dc48a93ee5731b366f78f658eb7243a8d) |
