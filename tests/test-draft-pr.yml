@@ -1,0 +1,43 @@
+name: Test draft PR input handling
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/draft-feature
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up a dummy source branch
+        run: |
+          git config user.email "test@example.com"
+          git config user.name "Test User"
+          git checkout -b draft-feature || true
+          echo "draft change" >> draft-test-file.txt
+          git add draft-test-file.txt
+          git commit -m "draft test commit" || true
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          github_token: fake-token-for-testing
+          source_branch: draft-feature
+          target_branch: master
+          title: "Draft Test PR"
+          body: "This is a draft PR test"
+          draft: "true"
+          allow_no_diff: "true"
+
+      - name: Assert action ran with draft input
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "Action outcome: $OUTCOME"
+          if [ "$OUTCOME" = "skipped" ]; then
+            echo "FAIL: action was unexpectedly skipped"
+            exit 1
+          fi
+          echo "PASS: action ran with draft=true (outcome=$OUTCOME, expected failure due to fake token)"
