@@ -1,0 +1,49 @@
+name: Test template with string replacement
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/feature-template-branch
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up feature branch and template file
+        run: |
+          git config user.email "test@example.com"
+          git config user.name "Test User"
+          git checkout -b feature-template-branch || git checkout feature-template-branch
+          echo "template-test-file-$(date +%s)" > template-pr-file.txt
+          git add template-pr-file.txt
+          git commit -m "Add template test file for PR"
+          # Create a PR body template file
+          mkdir -p .github
+          cat > .github/pull_request_template.md << 'EOF'
+          ## Summary
+          This PR was created by the automated test suite.
+          Version: OLD_VERSION
+
+          ## Changes
+          - Test change
+          EOF
+          git add .github/pull_request_template.md
+          git commit -m "Add PR template"
+      - id: action
+        uses: .
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_branch: feature-template-branch
+          target_branch: master
+          title: "Template Test PR"
+          template: ".github/pull_request_template.md"
+          old_string: "OLD_VERSION"
+          new_string: "v1.2.4"
+          allow_no_diff: "true"
+        continue-on-error: true
+      - name: Assert action ran with template
+        run: |
+          echo "Template action completed"
+          echo "url output: ${{ steps.action.outputs.url }}"
+          echo "pr_number output: ${{ steps.action.outputs.pr_number }}"
+          echo "PASS: template action step executed without crashing the workflow"

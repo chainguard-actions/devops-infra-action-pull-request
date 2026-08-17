@@ -1,0 +1,30 @@
+name: Test ignore_users skips processing
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        env:
+          GITHUB_ACTOR: ignored-test-user
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_branch: act-harness
+          target_branch: master
+          ignore_users: "ignored-test-user,${{ github.actor }}"
+
+      - name: Assert action succeeded because user was ignored
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "success" ]; then
+            echo "FAIL: expected action to succeed (user ignored), but got: $OUTCOME"
+            exit 1
+          fi
+          echo "PASS: action correctly skipped processing for ignored user"
