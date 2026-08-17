@@ -1,4 +1,4 @@
-name: Test basic PR creation
+name: Test draft PR creation
 on:
   workflow_dispatch:
 jobs:
@@ -14,25 +14,26 @@ jobs:
           git config user.email "test@example.com"
           git config user.name "Test User"
 
-      - name: Create a source branch with a unique commit
+      - name: Create a feature branch with a commit
         run: |
-          git checkout -b test-basic-source-branch
-          echo "basic test change $(date +%s)" > "$GITHUB_WORKSPACE/test-basic-change.txt"
-          git add test-basic-change.txt
-          git commit -m "test: add change for basic PR test"
+          git checkout -b test-draft-feature-branch
+          echo "test change for draft PR $(date)" > "$GITHUB_WORKSPACE/test-draft-change.txt"
+          git add test-draft-change.txt
+          git commit -m "test: add change for draft PR test"
 
-      - name: Run action with basic inputs
+      - name: Run action with draft=true
         id: action
         uses: .
         continue-on-error: true
         with:
           github_token: ${{ github.token }}
-          source_branch: test-basic-source-branch
+          source_branch: test-draft-feature-branch
           target_branch: act-harness
-          title: "Test Basic PR"
-          body: "This is a basic test PR created by act"
+          title: "Test Draft PR"
+          body: "This is a test draft PR"
+          draft: "true"
 
-      - name: Assert action ran (not cancelled)
+      - name: Check action outputs
         env:
           OUTCOME: ${{ steps.action.outcome }}
           PR_URL: ${{ steps.action.outputs.url }}
@@ -41,8 +42,8 @@ jobs:
           echo "action outcome: $OUTCOME"
           echo "pr_url: $PR_URL"
           echo "pr_number: $PR_NUMBER"
-          # The action should run to completion (success or failure at API level)
-          # but must not be cancelled or crash at the Docker/entrypoint level
+          # The action should at least run without crashing at the Docker level
+          # (API failures are acceptable in test environments)
           if [ "$OUTCOME" = "cancelled" ]; then
             echo "FAIL: action was cancelled unexpectedly"
             exit 1

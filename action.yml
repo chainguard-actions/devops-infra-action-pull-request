@@ -88,7 +88,7 @@ outputs:
     description: Pull request number
 runs:
   using: docker
-  image: docker://devopsinfra/action-pull-request@sha256:fa2ca207ac54ab739a1cc977625b15033032a2127c1e4b89b75b2c46c9d1688e # v1.2.5
+  image: docker://devopsinfra/action-pull-request:v1.2.5@sha256:fa2ca207ac54ab739a1cc977625b15033032a2127c1e4b89b75b2c46c9d1688e
   env:
     GITHUB_TOKEN: ${{ inputs.github_token }}
 branding:

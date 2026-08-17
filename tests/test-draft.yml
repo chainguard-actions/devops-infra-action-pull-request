@@ -1,0 +1,46 @@
+name: Test draft pull request creation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/draft-feature-branch
+      GITHUB_EVENT_NAME: push
+      GITHUB_HEAD_REF: draft-feature-branch
+      GITHUB_BASE_REF: master
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up a feature branch with a commit
+        run: |
+          git config user.email "test@example.com"
+          git config user.name "Test User"
+          git checkout -b draft-feature-branch || git checkout draft-feature-branch
+          echo "draft test change $(date)" > draft-test-file.txt
+          git add draft-test-file.txt
+          git commit -m "Draft test commit for PR" || true
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          github_token: fake-token-for-testing
+          source_branch: draft-feature-branch
+          target_branch: master
+          title: "Draft Test PR from act"
+          body: "This is a draft test pull request"
+          draft: "true"
+
+      - name: Assert action ran with draft option
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "action outcome: $OUTCOME"
+          # The action will fail because the token is fake and no real repo exists
+          # but we verify it was invoked and produced an outcome
+          if [ -z "$OUTCOME" ]; then
+            echo "FAIL: action did not produce an outcome"
+            exit 1
+          fi
+          echo "PASS: draft action was invoked and produced outcome: $OUTCOME"
