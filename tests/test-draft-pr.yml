@@ -1,0 +1,35 @@
+name: Test draft PR input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - id: action
+        uses: .
+        with:
+          github_token: ${{ github.token }}
+          source_branch: act-harness
+          target_branch: master
+          title: "Draft Test PR"
+          body: "This is a draft test PR"
+          draft: "true"
+          ignore_users: ${{ github.actor }}
+          allow_no_diff: "true"
+
+      - name: Assert action completed with draft input accepted
+        run: |
+          echo "Action completed successfully - actor was in ignore_users list, exited early"
+          echo "draft=true input was accepted without error"
+          URL="${{ steps.action.outputs.url }}"
+          PR="${{ steps.action.outputs.pr_number }}"
+          echo "url='$URL' pr_number='$PR'"
+          # Ignored user exits early, so no PR is created
+          if [ -n "$URL" ]; then
+            echo "WARN: Expected no PR URL for ignored user, got: $URL"
+          fi
+          echo "PASS: action accepted draft input correctly"

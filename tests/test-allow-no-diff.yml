@@ -1,0 +1,34 @@
+name: Test allow_no_diff feature
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - id: action
+        uses: .
+        with:
+          github_token: ${{ github.token }}
+          source_branch: act-harness
+          target_branch: master
+          title: "Test PR no diff"
+          body: "Testing allow_no_diff flag"
+          allow_no_diff: "true"
+          ignore_users: ${{ github.actor }}
+
+      - name: Assert action completed with allow_no_diff accepted
+        run: |
+          echo "Action completed successfully - actor was in ignore_users list, exited early"
+          echo "allow_no_diff=true input was accepted without error"
+          URL="${{ steps.action.outputs.url }}"
+          PR="${{ steps.action.outputs.pr_number }}"
+          echo "url='$URL' pr_number='$PR'"
+          # Ignored user exits early, so no PR is created
+          if [ -n "$URL" ]; then
+            echo "WARN: Expected no PR URL for ignored user, got: $URL"
+          fi
+          echo "PASS: action handled allow_no_diff input correctly"

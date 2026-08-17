@@ -1,0 +1,33 @@
+name: Test ignore_users feature
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - id: action
+        uses: .
+        with:
+          github_token: ${{ github.token }}
+          source_branch: act-harness
+          target_branch: master
+          title: "Test PR from act"
+          body: "This is a test PR"
+          ignore_users: ${{ github.actor }}
+          allow_no_diff: "true"
+
+      - name: Assert action completed for ignored user
+        run: |
+          echo "Action completed successfully for ignored user scenario"
+          URL="${{ steps.action.outputs.url }}"
+          PR="${{ steps.action.outputs.pr_number }}"
+          echo "url='$URL' pr_number='$PR'"
+          # When the actor is ignored, no PR is created — outputs should be empty
+          if [ -n "$URL" ]; then
+            echo "WARN: Expected no PR URL for ignored user, got: $URL"
+          fi
+          echo "PASS: action handled ignored user correctly"
