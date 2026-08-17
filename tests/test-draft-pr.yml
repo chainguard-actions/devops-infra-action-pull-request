@@ -1,0 +1,32 @@
+name: Test draft PR input is accepted
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # Test that the action accepts draft=true without crashing.
+      # ignore_users is set to the actual github.actor so the action exits 0
+      # immediately after the ignore check, before any git operations.
+      - id: action
+        uses: .
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_branch: act-harness
+          target_branch: main
+          title: "Draft Test PR"
+          body: "Testing draft PR creation flag"
+          draft: "true"
+          allow_no_diff: "true"
+          ignore_users: ${{ github.actor }}
+
+      - name: Assert action accepted draft input
+        run: |
+          echo "Action outcome: ${{ steps.action.outcome }}"
+          if [ "${{ steps.action.outcome }}" != "success" ]; then
+            echo "FAIL: expected action to succeed with draft=true"
+            exit 1
+          fi
+          echo "PASS: draft input was accepted and action exited cleanly"

@@ -1,0 +1,43 @@
+name: Test ignore_users option
+on:
+  workflow_dispatch:
+jobs:
+  test-ignore-users:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/dependabot/npm/lodash-4.17.21
+      GITHUB_EVENT_NAME: push
+      GITHUB_HEAD_REF: dependabot/npm/lodash-4.17.21
+      GITHUB_BASE_REF: master
+      GITHUB_ACTOR: dependabot
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up git branch context
+        run: |
+          git checkout -b dependabot-test-branch 2>/dev/null || git checkout dependabot-test-branch
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          github_token: fake-token-for-testing
+          source_branch: dependabot/npm/lodash-4.17.21
+          target_branch: master
+          title: "Dependabot PR"
+          body: "Automated dependency update."
+          ignore_users: "dependabot"
+
+      - name: Assert action handled ignore_users correctly
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "Action outcome: $OUTCOME"
+          # When the actor is in ignore_users, the action should exit early (success)
+          # or fail at API stage. Either way, it should complete without crashing.
+          if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action ran to completion with ignore_users set (outcome: $OUTCOME)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi

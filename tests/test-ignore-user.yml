@@ -1,0 +1,32 @@
+name: Test ignore_users skips PR creation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # When GITHUB_ACTOR is in ignore_users, the action should exit 0
+      # immediately with "[INFO] User <actor> is ignored. Skipping."
+      # without attempting any git fetch or PR creation.
+      # We use github.actor to match the actual actor name at runtime.
+      - id: action
+        uses: .
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_branch: act-harness
+          target_branch: main
+          title: "Test PR - should be skipped"
+          body: "This PR should never be created"
+          ignore_users: ${{ github.actor }}
+          allow_no_diff: "true"
+
+      - name: Assert action skipped PR creation
+        run: |
+          echo "Action outcome: ${{ steps.action.outcome }}"
+          if [ "${{ steps.action.outcome }}" != "success" ]; then
+            echo "FAIL: expected action to exit 0 when actor is in ignore_users"
+            exit 1
+          fi
+          echo "PASS: action correctly skipped PR creation for ignored user"

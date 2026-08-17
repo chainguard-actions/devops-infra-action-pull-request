@@ -1,15 +1,20 @@
-name: Test basic usage - create pull request
+name: Test basic pull request creation
 on:
   workflow_dispatch:
 jobs:
-  test:
+  test-basic:
     runs-on: ubuntu-latest
     env:
-      GITHUB_TOKEN: fake-token-for-testing
       GITHUB_REF: refs/heads/feature-branch
       GITHUB_EVENT_NAME: push
+      GITHUB_HEAD_REF: feature-branch
+      GITHUB_BASE_REF: master
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up git branch context
+        run: |
+          git checkout -b feature-branch 2>/dev/null || git checkout feature-branch
 
       - id: action
         uses: .
@@ -22,13 +27,15 @@ jobs:
           body: "This is a test pull request body."
           draft: "false"
 
-      - name: Assert action ran (outputs may be empty due to fake token)
+      - name: Assert action ran (may fail due to invalid token but should not crash on setup)
         env:
           OUTCOME: ${{ steps.action.outcome }}
         run: |
-          echo "action outcome: $OUTCOME"
+          echo "Action outcome: $OUTCOME"
+          # The action should either succeed or fail with an API error (not a setup error)
+          # With a fake token, we expect failure at the API call stage
           if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
-            echo "PASS: action executed (outcome=$OUTCOME)"
+            echo "PASS: action ran to completion (outcome: $OUTCOME)"
           else
             echo "FAIL: unexpected outcome '$OUTCOME'"
             exit 1

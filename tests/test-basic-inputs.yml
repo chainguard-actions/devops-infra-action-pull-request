@@ -1,0 +1,36 @@
+name: Test basic inputs are accepted
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # Smoke test: verify the action starts up and processes all common
+      # optional inputs without crashing at the input-parsing stage.
+      # ignore_users is set to the actual github.actor so the action exits 0
+      # immediately after the ignore check, before any git operations.
+      - id: action
+        uses: .
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_branch: act-harness
+          target_branch: main
+          title: "Automated Test PR"
+          body: "This is a test pull request body"
+          label: "test,automated"
+          draft: "false"
+          allow_no_diff: "true"
+          ignore_users: ${{ github.actor }}
+          max_body_bytes: "65000"
+          max_diff_lines: "0"
+
+      - name: Assert action succeeded
+        run: |
+          echo "Action outcome: ${{ steps.action.outcome }}"
+          if [ "${{ steps.action.outcome }}" != "success" ]; then
+            echo "FAIL: expected action to succeed (exit 0 via ignore_users)"
+            exit 1
+          fi
+          echo "PASS: action accepted all inputs and exited cleanly"
