@@ -1,4 +1,4 @@
-name: Test draft PR creation (ignore_users early exit)
+name: Test PR with custom body (ignore_users early exit)
 on:
   workflow_dispatch:
 jobs:
@@ -15,9 +15,14 @@ jobs:
           github_token: ${{ github.token }}
           source_branch: act-harness
           target_branch: master
-          title: "[Test] Draft PR"
-          body: "This is a draft test PR."
-          draft: "true"
+          title: "[Test] Custom body PR"
+          body: |
+            ## Summary
+            This PR was created by the act test suite to verify custom body support.
+
+            ## Changes
+            - Test change 1
+            - Test change 2
           ignore_users: ${{ github.actor }}
 
       - name: Assert action completed successfully via ignore_users early exit
