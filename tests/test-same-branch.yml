@@ -1,0 +1,30 @@
+name: Test same branch exits cleanly
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Run action with same source and target branch and actor in ignore_users
+        id: action
+        uses: .
+        with:
+          github_token: ${{ github.token }}
+          source_branch: act-harness
+          target_branch: act-harness
+          allow_no_diff: "false"
+          ignore_users: ${{ github.actor }}
+        continue-on-error: true
+      - name: Assert action exited cleanly (actor is ignored before branch check)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          # The action should succeed (exit 0) when the actor is in ignore_users,
+          # which happens before any git fetch or branch comparison
+          if [ "$OUTCOME" != "success" ]; then
+            echo "FAIL: expected success outcome, got: $OUTCOME"
+            exit 1
+          fi
+          echo "PASS: action exited cleanly"

@@ -1,0 +1,27 @@
+name: Test invalid max_diff_lines causes failure
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Run action with non-integer max_diff_lines
+        id: action
+        uses: .
+        with:
+          github_token: ${{ github.token }}
+          source_branch: act-harness
+          target_branch: nonexistent-target-branch-for-testing
+          max_diff_lines: "abc"
+        continue-on-error: true
+      - name: Assert action failed due to invalid max_diff_lines
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected failure when max_diff_lines is not an integer, got: $OUTCOME"
+            exit 1
+          fi
+          echo "PASS: action correctly failed for non-integer max_diff_lines"

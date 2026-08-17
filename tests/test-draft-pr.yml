@@ -1,11 +1,11 @@
-name: Test basic usage
+name: Test draft pull request
 on:
   workflow_dispatch:
 jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      GITHUB_REF: refs/heads/feature-branch
+      GITHUB_REF: refs/heads/draft-feature
       GITHUB_EVENT_NAME: push
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -13,24 +13,23 @@ jobs:
         run: |
           git config user.email "test@example.com"
           git config user.name "Test User"
-          git checkout -b feature-branch || true
+          git checkout -b draft-feature || true
       - id: action
         uses: .
         with:
           github_token: fake-token-for-testing
-          source_branch: feature-branch
+          source_branch: draft-feature
           target_branch: master
-          title: "Test PR"
-          body: "This is a test pull request body"
+          title: "Draft Test PR"
+          body: "This is a draft pull request"
+          draft: "true"
           allow_no_diff: "true"
         continue-on-error: true
       - name: Assert action ran
         run: |
           echo "Action outcome: ${{ steps.action.outcome }}"
-          # The action may fail due to fake token / no real API, but it should at least start
-          # We accept either success or failure (API error) but not a setup error
           if [ "${{ steps.action.outcome }}" = "skipped" ]; then
             echo "FAIL: action was skipped unexpectedly"
             exit 1
           fi
-          echo "PASS: action ran (outcome: ${{ steps.action.outcome }})"
+          echo "PASS: draft PR action ran (outcome: ${{ steps.action.outcome }})"
