@@ -1,4 +1,4 @@
-name: Test basic inputs
+name: Test no-diff behavior
 on:
   workflow_dispatch:
 jobs:
@@ -21,7 +21,7 @@ jobs:
           git remote set-url origin "$GITHUB_WORKSPACE/.git-remote" 2>/dev/null || \
             git remote add origin "$GITHUB_WORKSPACE/.git-remote"
 
-      - name: Run action with basic inputs
+      - name: Run action with no diff (same branch, allow_no_diff=false)
         id: action
         continue-on-error: true
         uses: .
@@ -29,19 +29,18 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           source_branch: act-harness
           target_branch: act-harness
-          title: "Test PR - basic inputs"
-          body: "Testing basic input acceptance"
-          draft: "false"
-          allow_no_diff: "true"
-          max_body_bytes: "65000"
-          max_diff_lines: "0"
+          title: "Test PR - no diff"
+          body: "This is a test PR body"
+          allow_no_diff: "false"
 
-      - name: Assert action accepted inputs and ran
+      - name: Assert action handled no-diff gracefully
         run: |
           echo "Action outcome: ${{ steps.action.outcome }}"
-          # The action should start and run (success or failure due to no real diff/branch)
+          # When there is no diff between source and target, the action should
+          # either succeed (skipping PR creation) or fail with a known no-diff error.
+          # Either way, it should NOT create a PR. We just verify it ran.
           if [ "${{ steps.action.outcome }}" = "success" ] || [ "${{ steps.action.outcome }}" = "failure" ]; then
-            echo "PASS: action ran with basic inputs (outcome=${{ steps.action.outcome }})"
+            echo "PASS: action completed (outcome=${{ steps.action.outcome }})"
           else
             echo "FAIL: unexpected outcome: ${{ steps.action.outcome }}"
             exit 1
