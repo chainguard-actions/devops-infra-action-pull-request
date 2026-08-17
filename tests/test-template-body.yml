@@ -1,4 +1,4 @@
-name: Test draft PR scenario
+name: Test PR with body and label inputs
 on:
   workflow_dispatch:
 jobs:
@@ -7,25 +7,29 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Create a source branch with a commit
+      - name: Create source branch with a commit
         run: |
           git config user.email "test@example.com"
           git config user.name "Test User"
-          git checkout -b test-draft-source
-          echo "draft-test-$(date +%s)" > tests/draft-test-marker.txt
-          git add tests/draft-test-marker.txt
-          git commit -m "Add draft test marker"
+          BRANCH="test-template-$(date +%s)"
+          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+          git checkout -b "$BRANCH"
+          echo "template-test-$(date +%s)" > tests/template-test.txt
+          git add tests/template-test.txt
+          git commit -m "Add template test file"
 
       - id: action
         uses: .
         continue-on-error: true
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          source_branch: test-draft-source
+          source_branch: ${{ env.BRANCH }}
           target_branch: act-harness
-          title: "Draft Test PR"
-          body: "Testing draft PR creation"
-          draft: "true"
+          title: "Template Test PR"
+          body: "## Summary\n\nThis PR was created by the action test suite.\n\nVersion: PLACEHOLDER"
+          old_string: "PLACEHOLDER"
+          new_string: "v1.2.3"
+          label: "test"
           allow_no_diff: "true"
 
       - name: Assert action ran

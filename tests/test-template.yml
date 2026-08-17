@@ -1,0 +1,50 @@
+name: Test template with string replacement
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/template-feature-branch
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up git identity and create template file
+        run: |
+          git config user.email "test@example.com"
+          git config user.name "Test User"
+          git checkout -b template-feature-branch || git checkout template-feature-branch
+          # Create a PR template file
+          mkdir -p .github
+          echo "## Summary" > .github/pull_request_template.md
+          echo "PLACEHOLDER_VERSION was updated." >> .github/pull_request_template.md
+          echo "## Changes" >> .github/pull_request_template.md
+          git add .github/pull_request_template.md
+          git commit -m "add PR template"
+
+      # Test with template file and old_string/new_string replacement.
+      # The action will fail at the API call stage due to the fake token.
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          github_token: fake-token-for-testing
+          source_branch: template-feature-branch
+          target_branch: master
+          title: "Test PR with template"
+          template: ".github/pull_request_template.md"
+          old_string: "PLACEHOLDER_VERSION"
+          new_string: "v2.0.0"
+          allow_no_diff: "true"
+
+      - name: Assert action was invoked
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "skipped" ] || [ "$OUTCOME" = "cancelled" ]; then
+            echo "FAIL: expected failure or success, got $OUTCOME"
+            exit 1
+          fi
+          echo "PASS: template action was invoked (outcome=$OUTCOME)"
